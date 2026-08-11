@@ -24,7 +24,7 @@ jobs:
     - name: Instalar librerías
       run: |
         python -m pip install --upgrade pip
-        pip install pandas matplotlib playwright
+        pip install pandas matplotlib playwright requests
 
     - name: Instalar navegadores para Playwright
       run: |
@@ -32,6 +32,9 @@ jobs:
         playwright install-deps chromium
 
     - name: Ejecutar el rastreador
+      env:
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: python rastreador.py
 
     - name: Subir y guardar archivos en el repositorio
