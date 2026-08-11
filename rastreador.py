@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
@@ -10,6 +11,24 @@ URL_PRODUCTO = "https://www.amazon.es/dp/B01NCTOKPM"
 
 ARCHIVO_CSV = "historial_precios.csv"
 ARCHIVO_GRAFICO = "grafico_precios.png"
+
+# Variables de entorno para Telegram
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+
+def enviar_notificacion_telegram(mensaje):
+    if TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        payload = {
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": mensaje,
+            "parse_mode": "Markdown"
+        }
+        try:
+            requests.post(url, data=payload)
+            print("Notificación enviada a Telegram con éxito.")
+        except Exception as e:
+            print(f"Error al enviar mensaje por Telegram: {e}")
 
 def obtener_precio_amazon_directo(url):
     print("Abriendo navegador en la nube y buscando el precio...")
@@ -123,3 +142,8 @@ if __name__ == "__main__":
     if precio:
         registrar_precio(precio)
         generar_grafico()
+        
+        # Enviar notificación a Telegram
+        hora_espana = (datetime.utcnow() + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M")
+        mensaje = f"📷 **Rastreador Lumix**\n\nFecha: {hora_espana}\nPrecio detectado: **{precio:.2f} €**"
+        enviar_notificacion_telegram(mensaje)
