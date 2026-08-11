@@ -30,80 +30,87 @@ def enviar_notificacion_telegram(mensaje):
         except Exception as e:
             print(f"Error al enviar mensaje por Telegram: {e}")
 
-def obtener_precio_amazon_directo(url):
+def obtener_precio_amazon_directo(url, intentos=3):
     print("Abriendo navegador en la nube y buscando el precio...")
-    with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=True,
-            args=[
-                "--disable-blink-features=AutomationControlled",
-                "--no-sandbox",
-                "--disable-setuid-sandbox"
-            ]
-        )
-        context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-            viewport={"width": 1920, "height": 1080},
-            locale="es-ES",
-            timezone_id="Europe/Madrid"
-        )
-        
-        page = context.new_page()
-        page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-        
-        precio_num = None
-        
-        try:
-            page.goto(url, wait_until="networkidle", timeout=60000)
-            time.sleep(3)
-
-            # Aceptar cookies si aparecen
-            if page.locator("#sp-cc-accept").count() > 0:
-                page.locator("#sp-cc-accept").click()
-                time.sleep(1)
-
-            # Buscar especificamente en la caja de compra principal (Apex / Core Price)
-            selectores_prioritarios = [
-                "#corePrice_feature_div span.a-offscreen",
-                "#corePriceDisplay_desktop_feature_div span.a-offscreen",
-                "#apex_desktop span.a-offscreen",
-                ".a-box-group span.a-price span.a-offscreen"
-            ]
-
-            for selector in selectores_prioritarios:
-                elementos = page.locator(selector)
-                if elementos.count() > 0:
-                    for i in range(elementos.count()):
-                        txt = elementos.nth(i).inner_text()
-                        match = re.search(r'(\d+[\.,]\d{2})\s*€', txt)
-                        if match:
-                            precio_texto = match.group(1)
-                            limpio = re.sub(r'[^\d,.]', '', precio_texto).replace(',', '.')
-                            val = float(limpio)
-                            # Si detecta por error el precio sin IVA, le sumamos el IVA o filtramos
-                            if val > 100: # Aseguramos que no capture cosas raras
-                                precio_num = val
-                                print(f"¡Éxito! Precio exacto detectado: {precio_num:.2f}€")
-                                break
-                    if precio_num:
-                        break
-
-            # Si falla la caja principal, usar selector general
-            if not precio_num:
-                elementos_precio = page.locator("span.a-price span.a-offscreen")
-                if elementos_precio.count() > 0:
-                    txt = elementos_precio.first.inner_text()
-                    match = re.search(r'(\d+[\.,]\d{2})\s*€', txt)
-                    if match:
-                        precio_texto = match.group(1)
-                        limpio = re.sub(r'[^\d,.]', '', precio_texto).replace(',', '.')
-                        precio_num = float(limpio)
-
-        except Exception as e:
-            print(f"Error durante la lectura: {e}")
+    
+    for intento in range(1, intentos + 1):
+        print(f"Intento {intento} de {intentos}...")
+        with sync_playwright() as p:
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-infobars",
+                    "--window-size=1920,1080"
+                ]
+            )
+            context = browser.new_context(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+                viewport={"width": 1920, "height": 1080},
+                locale="es-ES",
+                timezone_id="Europe/Madrid",
+                extra_http_headers={
+                    "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+                }
+            )
             
-        browser.close()
-        return precio_num
+            page = context.new_page()
+            page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            
+            precio_num = None
+            
+            try:
+                # Navegar a la página con margen de tiempo
+                page.goto(url, wait_until="domcontentloaded", timeout=60000)
+                time.sleep(4)
+
+                # Aceptar cookies si aparecen
+                if page.locator("#sp-cc-accept").count() > 0:
+                    page.locator("#sp-cc-accept").click()
+                    time.sleep(1)
+
+                # Selectores prioritarios del precio
+                selectores_prioritarios = [
+                    "#corePrice_feature_div span.a-offscreen",
+                    "#corePriceDisplay_desktop_feature_div span.a-offscreen",
+                    "#apex_desktop span.a-offscreen",
+                    ".a-box-group span.a-price span.a-offscreen",
+                    "span.a-price span.a-offscreen"
+                ]
+
+                for selector in selectores_prioritarios:
+                    elementos = page.locator(selector)
+                    if elementos.count() > 0:
+                        for i in range(elementos.count()):
+                            txt = elementos.nth(i).inner_text()
+                            match = re.search(r'(\d+[\.,]\d{2})\s*€', txt)
+                            if match:
+                                precio_texto = match.group(1)
+                                limpio = re.sub(r'[^\d,.]', '', precio_texto).replace(',', '.')
+                                val = float(limpio)
+                                if val > 100:
+                                    precio_num = val
+                                    break
+                        if precio_num:
+                            break
+
+            except Exception as e:
+                print(f"Error en intento {intento}: {e}")
+                
+            browser.close()
+            
+            if precio_num:
+                print(f"¡Éxito en el intento {intento}! Precio: {precio_num:.2f}€")
+                return precio_num
+            
+            # Si falla, esperamos 5 segundos antes del siguiente intento
+            time.sleep(5)
+            
+    print("No se pudo obtener el precio tras varios intentos.")
+    return None
 
 def registrar_precio(precio):
     # Calculamos la hora de España (+2 horas respecto a UTC en horario de verano)
