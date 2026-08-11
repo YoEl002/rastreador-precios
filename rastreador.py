@@ -3,9 +3,8 @@ import re
 import time
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime
+from datetime import datetime, timedelta
 from playwright.sync_api import sync_playwright
-from zoneinfo import ZoneInfo
 
 URL_PRODUCTO = "https://www.amazon.es/dp/B01NCTOKPM"
 
@@ -15,7 +14,6 @@ ARCHIVO_GRAFICO = "grafico_precios.png"
 def obtener_precio_amazon_directo(url):
     print("Abriendo navegador en la nube y buscando el precio...")
     with sync_playwright() as p:
-        # Lanzamos Chromium con argumentos para evitar la detección de automatización
         browser = p.chromium.launch(
             headless=True,
             args=[
@@ -31,7 +29,6 @@ def obtener_precio_amazon_directo(url):
             timezone_id="Europe/Madrid"
         )
         
-        # Ocultamos la propiedad navigator.webdriver
         page = context.new_page()
         page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         
@@ -41,12 +38,12 @@ def obtener_precio_amazon_directo(url):
             page.goto(url, wait_until="networkidle", timeout=60000)
             time.sleep(3)
 
-            # Aceptar cookies si salta la ventana flotante
+            # Aceptar cookies si aparecen
             if page.locator("#sp-cc-accept").count() > 0:
                 page.locator("#sp-cc-accept").click()
                 time.sleep(1)
 
-            # 1. Buscar precio en el bloque principal del producto (.a-offscreen)
+            # 1. Buscar precio en el bloque principal del producto
             elementos_precio = page.locator("span.a-price span.a-offscreen")
             if elementos_precio.count() > 0:
                 for i in range(elementos_precio.count()):
@@ -59,7 +56,7 @@ def obtener_precio_amazon_directo(url):
                         print(f"¡Éxito! Precio detectado en bloque principal: {precio_num:.2f}€")
                         break
 
-            # 2. Si falla el bloque principal, buscar en la casilla de vendedor Amazon
+            # 2. Buscar en casilla de vendedor Amazon si falla el anterior
             if not precio_num:
                 bloques_mercado = page.locator("#merchantInfoFeature_feature_div")
                 if bloques_mercado.count() > 0:
@@ -81,7 +78,10 @@ def obtener_precio_amazon_directo(url):
         return precio_num
 
 def registrar_precio(precio):
-    fecha_actual = datetime.now(ZoneInfo("Europe/Madrid")).strftime("%Y-%m-%d %H:%M")
+    # Calculamos la hora de España (+2 horas respecto a UTC en horario de verano)
+    hora_espana = datetime.utcnow() + timedelta(hours=2)
+    fecha_actual = hora_espana.strftime("%Y-%m-%d %H:%M")
+    
     precio_formateado = f"{precio:.2f}"
     nuevo_registro = pd.DataFrame([{"Fecha": fecha_actual, "Precio": precio_formateado}])
     
@@ -115,7 +115,7 @@ def generar_grafico():
 if __name__ == "__main__":
     precio = obtener_precio_amazon_directo(URL_PRODUCTO)
     
-    # Si falla la extracción automática en la nube, genera un primer registro de prueba inicial
+    # Respaldo en caso de primera ejecución o bloqueo
     if not precio and not os.path.exists(ARCHIVO_CSV):
         print("Creando archivo de inicio predeterminado...")
         precio = 639.10
