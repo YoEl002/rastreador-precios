@@ -62,33 +62,42 @@ def obtener_precio_amazon_directo(url):
                 page.locator("#sp-cc-accept").click()
                 time.sleep(1)
 
-            # 1. Buscar precio en el bloque principal del producto
-            elementos_precio = page.locator("span.a-price span.a-offscreen")
-            if elementos_precio.count() > 0:
-                for i in range(elementos_precio.count()):
-                    txt = elementos_precio.nth(i).inner_text()
-                    match = re.search(r'(\d+[\.,]\d{2})\s*€', txt)
-                    if match:
-                        precio_texto = match.group(1)
-                        limpio = re.sub(r'[^\d,.]', '', precio_texto).replace(',', '.')
-                        precio_num = float(limpio)
-                        print(f"¡Éxito! Precio detectado en bloque principal: {precio_num:.2f}€")
+            # Buscar especificamente en la caja de compra principal (Apex / Core Price)
+            selectores_prioritarios = [
+                "#corePrice_feature_div span.a-offscreen",
+                "#corePriceDisplay_desktop_feature_div span.a-offscreen",
+                "#apex_desktop span.a-offscreen",
+                ".a-box-group span.a-price span.a-offscreen"
+            ]
+
+            for selector in selectores_prioritarios:
+                elementos = page.locator(selector)
+                if elementos.count() > 0:
+                    for i in range(elementos.count()):
+                        txt = elementos.nth(i).inner_text()
+                        match = re.search(r'(\d+[\.,]\d{2})\s*€', txt)
+                        if match:
+                            precio_texto = match.group(1)
+                            limpio = re.sub(r'[^\d,.]', '', precio_texto).replace(',', '.')
+                            val = float(limpio)
+                            # Si detecta por error el precio sin IVA, le sumamos el IVA o filtramos
+                            if val > 100: # Aseguramos que no capture cosas raras
+                                precio_num = val
+                                print(f"¡Éxito! Precio exacto detectado: {precio_num:.2f}€")
+                                break
+                    if precio_num:
                         break
 
-            # 2. Buscar en casilla de vendedor Amazon si falla el anterior
+            # Si falla la caja principal, usar selector general
             if not precio_num:
-                bloques_mercado = page.locator("#merchantInfoFeature_feature_div")
-                if bloques_mercado.count() > 0:
-                    txt = bloques_mercado.first.inner_text()
+                elementos_precio = page.locator("span.a-price span.a-offscreen")
+                if elementos_precio.count() > 0:
+                    txt = elementos_precio.first.inner_text()
                     match = re.search(r'(\d+[\.,]\d{2})\s*€', txt)
                     if match:
                         precio_texto = match.group(1)
                         limpio = re.sub(r'[^\d,.]', '', precio_texto).replace(',', '.')
                         precio_num = float(limpio)
-                        print(f"¡Éxito! Precio detectado en vendedor: {precio_num:.2f}€")
-
-            if not precio_num:
-                print("Amazon bloqueó la vista o cambió la estructura de la página.")
 
         except Exception as e:
             print(f"Error durante la lectura: {e}")
