@@ -143,7 +143,7 @@ def generar_grafico():
 if __name__ == "__main__":
     precio = obtener_precio_amazon_directo(URL_PRODUCTO)
     
-    # Respaldo en caso de primera ejecución o bloqueo
+    # Respaldo en caso de primera ejecución absoluta si no existe CSV
     if not precio and not os.path.exists(ARCHIVO_CSV):
         print("Creando archivo de inicio predeterminado...")
         precio = 639.10
@@ -152,7 +152,13 @@ if __name__ == "__main__":
         registrar_precio(precio)
         generar_grafico()
         
-        # Enviar notificación a Telegram
+        # Enviar notificación de éxito a Telegram
         hora_espana = (datetime.utcnow() + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M")
         mensaje = f"📷 **Rastreador Lumix**\n\nFecha: {hora_espana}\nPrecio detectado: **{precio:.2f} €**"
         enviar_notificacion_telegram(mensaje)
+    else:
+        # SI FALLA AMAZON, QUE TAMBIÉN TE AVISE POR TELEGRAM Y NO SE QUEDE MUDO
+        hora_espana = (datetime.utcnow() + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M")
+        mensaje_error = f"⚠️ **Rastreador Lumix**\n\nFecha: {hora_espana}\nNo se ha podido capturar el precio de Amazon en esta ejecución (posible bloqueo temporal)."
+        enviar_notificacion_telegram(mensaje_error)
+        print("No se pudo obtener el precio de Amazon.")
