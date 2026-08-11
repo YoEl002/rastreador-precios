@@ -6,7 +6,6 @@ on:
     - cron: '0 10 * * *'
   workflow_dispatch: # Permite ejecutarlo manualmente con un botón
 
-# Concedemos permisos explícitos de escritura para que el bot pueda guardar el CSV
 permissions:
   contents: write
 
@@ -38,8 +37,7 @@ jobs:
 
     - name: Guardar los cambios (CSV y Gráfica) en GitHub
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action Bot"
-        git add historial_precios.csv grafico_precios.png
-        git commit -m "Actualizar historial de precios [Auto]" || exit 0
-        git push
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git add -A
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Actualizar historial de precios [Auto]" && git push)
