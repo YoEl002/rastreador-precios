@@ -74,19 +74,20 @@ def obtener_precio_amazon_directo(url):
         browser.close()
         return precio_num
 
+# --- FUNCIÓN MODIFICADA ---
 def registrar_precio(precio):
     fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M")
     precio_formateado = f"{precio:.2f}"
     nuevo_registro = pd.DataFrame([{"Fecha": fecha_actual, "Precio": precio_formateado}])
     
-    try:
+    if os.path.exists(ARCHIVO_CSV):
         df = pd.read_csv(ARCHIVO_CSV)
         df = pd.concat([df, nuevo_registro], ignore_index=True)
-    except FileNotFoundError:
+    else:
         df = nuevo_registro
         
     df.to_csv(ARCHIVO_CSV, index=False)
-    print("Historial actualizado en el CSV.")
+    print(f"Historial guardado exitosamente en {ARCHIVO_CSV}")
 
 def generar_grafico():
     try:
