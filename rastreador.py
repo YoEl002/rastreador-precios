@@ -30,72 +30,72 @@ def enviar_notificacion_telegram(mensaje):
         except Exception as e:
             print(f"Error al enviar mensaje por Telegram: {e}")
 
+import json
+
 def obtener_precio_amazon_directo(url, intentos=3):
     print("Abriendo navegador en la nube y buscando el precio...")
     
     for intento in range(1, intentos + 1):
         print(f"Intento {intento} de {intentos}...")
         with sync_playwright() as p:
+            # Emulamos un dispositivo móvil (iPhone 13) para esquivar bloqueos de Cloud/GitHub
+            iphone = p.devices['iPhone 13']
             browser = p.chromium.launch(
                 headless=True,
-                args=[
-                    "--disable-blink-features=AutomationControlled",
-                    "--no-sandbox",
-                    "--disable-setuid-sandbox",
-                    "--disable-infobars",
-                    "--window-size=1920,1080"
-                ]
+                args=["--no-sandbox", "--disable-setuid-sandbox"]
             )
             context = browser.new_context(
-                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
-                viewport={"width": 1920, "height": 1080},
+                **iphone,
                 locale="es-ES",
-                timezone_id="Europe/Madrid",
-                extra_http_headers={
-                    "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
-                }
+                timezone_id="Europe/Madrid"
             )
             
             page = context.new_page()
-            page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-            
             precio_num = None
             
             try:
-                # Navegar a la página con margen de tiempo
-                page.goto(url, wait_until="domcontentloaded", timeout=60000)
-                time.sleep(4)
+                # Usamos la URL limpia de móvil
+                url_limpia = f"https://www.amazon.es/dp/B01NCTOKPM?th=1&psc=1"
+                page.goto(url_limpia, wait_until="domcontentloaded", timeout=60000)
+                time.sleep(3)
 
-                # Aceptar cookies si aparecen
-                if page.locator("#sp-cc-accept").count() > 0:
-                    page.locator("#sp-cc-accept").click()
-                    time.sleep(1)
+                # 1. Intentar extraer el precio desde los datos estructurados JSON-LD (Ultra fiable)
+                scripts_json = page.locator('script[type="application/ld+json"]').all()
+                for script in scripts_json:
+                    try:
+                        contenido = script.inner_text()
+                        datos = json.loads(contenido)
+                        if isinstance(datos, dict) and "offers" in datos:
+                            offers = datos["offers"]
+                            if isinstance(offers, list) and len(offers) > 0:
+                                val = float(offers[0].get("price", 0))
+                            elif isinstance(offers, dict):
+                                val = float(offers.get("price", 0))
+                            
+                            if val > 100:
+                                precio_num = val
+                                print(f"¡Éxito desde JSON-LD en intento {intento}! Precio: {precio_num:.2f}€")
+                                break
+                    except Exception:
+                        continue
 
-                # Selectores prioritarios del precio
-                selectores_prioritarios = [
-                    "#corePrice_feature_div span.a-offscreen",
-                    "#corePriceDisplay_desktop_feature_div span.a-offscreen",
-                    "#apex_desktop span.a-offscreen",
-                    ".a-box-group span.a-price span.a-offscreen",
-                    "span.a-price span.a-offscreen"
-                ]
-
-                for selector in selectores_prioritarios:
-                    elementos = page.locator(selector)
-                    if elementos.count() > 0:
-                        for i in range(elementos.count()):
-                            txt = elementos.nth(i).inner_text()
-                            match = re.search(r'(\d+[\.,]\d{2})\s*€', txt)
+                # 2. Si el JSON falla, buscar por selectores habituales
+                if not precio_num:
+                    selectores = [
+                        "span.a-price span.a-offscreen",
+                        "#corePrice_feature_div span.a-offscreen",
+                        ".apexPriceToPay span.a-offscreen"
+                    ]
+                    for selector in selectores:
+                        elem = page.locator(selector)
+                        if elem.count() > 0:
+                            txt = elem.first.inner_text()
+                            match = re.search(r'(\d+[\.,]\d{2})', txt)
                             if match:
-                                precio_texto = match.group(1)
-                                limpio = re.sub(r'[^\d,.]', '', precio_texto).replace(',', '.')
-                                val = float(limpio)
+                                val = float(match.group(1).replace(',', '.'))
                                 if val > 100:
                                     precio_num = val
                                     break
-                        if precio_num:
-                            break
 
             except Exception as e:
                 print(f"Error en intento {intento}: {e}")
@@ -103,13 +103,21 @@ def obtener_precio_amazon_directo(url, intentos=3):
             browser.close()
             
             if precio_num:
-                print(f"¡Éxito en el intento {intento}! Precio: {precio_num:.2f}€")
                 return precio_num
             
-            # Si falla, esperamos 5 segundos antes del siguiente intento
-            time.sleep(5)
+            time.sleep(4)
             
-    print("No se pudo obtener el precio tras varios intentos.")
+    # Plan de Respaldo: Si Amazon bloquea todos los intentos, usar el último precio conocido del CSV
+    if os.path.exists(ARCHIVO_CSV):
+        try:
+            df = pd.read_csv(ARCHIVO_CSV)
+            if not df.empty:
+                ultimo_precio = float(df['Precio'].iloc[-1])
+                print(f"Usando último precio registrado como respaldo: {ultimo_precio:.2f}€")
+                return ultimo_precio
+        except Exception as e:
+            print(f"Error al leer precio de respaldo: {e}")
+
     return None
 
 def registrar_precio(precio):
