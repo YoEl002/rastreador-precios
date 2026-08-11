@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 from playwright.sync_api import sync_playwright
+from zoneinfo import ZoneInfo
 
 URL_PRODUCTO = "https://www.amazon.es/dp/B01NCTOKPM"
 
@@ -80,7 +81,7 @@ def obtener_precio_amazon_directo(url):
         return precio_num
 
 def registrar_precio(precio):
-    fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M")
+    fecha_actual = datetime.now(ZoneInfo("Europe/Madrid")).strftime("%Y-%m-%d %H:%M")
     precio_formateado = f"{precio:.2f}"
     nuevo_registro = pd.DataFrame([{"Fecha": fecha_actual, "Precio": precio_formateado}])
     
