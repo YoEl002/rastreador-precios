@@ -38,7 +38,10 @@ jobs:
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git status
-        git add -f historial_precios.csv grafico_precios.png
-        git commit -m "Actualizar CSV y Gráfica de precios"
-        git push origin main
+        git add -A
+        if git diff-index --quiet HEAD; then
+          echo "No hay cambios nuevos en los datos."
+        else
+          git commit -m "Actualizar historial y gráfica de precios"
+          git push origin main
+        fi
