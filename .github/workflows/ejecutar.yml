@@ -1,0 +1,41 @@
+name: Rastreador de Precios Automático
+
+on:
+  schedule:
+    # Se ejecuta todos los días a las 10:00 UTC (12:00 hora de España)
+    - cron: '0 10 * * *'
+  workflow_dispatch: # Permite ejecutarlo manualmente con un botón
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Descargar el código del repositorio
+      uses: actions/checkout@v3
+
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Instalar librerías
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas matplotlib playwright
+
+    - name: Instalar navegadores para Playwright
+      run: |
+        playwright install chromium
+        playwright install-deps chromium
+
+    - name: Ejecutar el rastreador
+      run: python rastreador.py
+
+    - name: Guardar los cambios (CSV y Gráfica) en GitHub
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action Bot"
+        git add historial_precios.csv grafico_precios.png
+        git commit -m "Actualizar historial de precios [Auto]" || exit 0
+        git push
