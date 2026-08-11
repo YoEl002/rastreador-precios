@@ -69,4 +69,5 @@ Este proyecto es de código abierto y está disponible bajo la licencia MIT.
 
 ---
 
-¡Y listo! Apaga la pantalla, tómate algo fresco y descansa. Ya tienes el trabajo terminado por hoy. 🚀
+### ¿Por qué pasaba eso?
+En lenguaje Markdown (el formato que usa GitHub), cuando pones tres comillas invertidas `
