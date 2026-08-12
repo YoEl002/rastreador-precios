@@ -42,5 +42,3 @@ jobs:
       with:
         commit_message: "Actualización automática de precios"
         file_pattern: "historial_precios.csv"
-        # Esta opción le dice que tire de la rama remota antes de enviar para evitar rechazos
-        pull_strategy: 'NO_FF'
