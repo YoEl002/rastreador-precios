@@ -2,6 +2,7 @@ import os
 import re
 import time
 import requests
+import json
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
@@ -30,8 +31,6 @@ def enviar_notificacion_telegram(mensaje):
         except Exception as e:
             print(f"Error al enviar mensaje por Telegram: {e}")
 
-import json
-
 def obtener_precio_amazon_directo(url, intentos=3):
     print("Abriendo navegador en la nube y buscando el precio...")
     
@@ -49,7 +48,6 @@ def obtener_precio_amazon_directo(url, intentos=3):
                 viewport={"width": 1920, "height": 1080},
                 locale="es-ES",
                 timezone_id="Europe/Madrid",
-                # Forzamos una geolocalización o permisos limpios si fuera necesario
                 permissions=["geolocation"]
             )
             
@@ -77,7 +75,7 @@ def obtener_precio_amazon_directo(url, intentos=3):
                             
                             # Si encontramos el precio, le aplicamos el 21% de IVA para que coincida con el real de España
                             if val > 100:
-                                precio_num = round(val * 1.21, 2) # <-- ¡Aquí aplicamos el 21% de IVA!
+                                precio_num = round(val * 1.21, 2)
                                 print(f"¡Éxito desde JSON-LD en intento {intento}! Precio con IVA: {precio_num:.2f}€")
                                 break
                     except Exception:
@@ -98,7 +96,7 @@ def obtener_precio_amazon_directo(url, intentos=3):
                             if match:
                                 val = float(match.group(1).replace(',', '.'))
                                 if val > 100:
-                                    precio_num = round(val * 1.21, 2) # <-- ¡Aquí también aplicamos el 21% de IVA!
+                                    precio_num = round(val * 1.21, 2)
                                     break
 
             except Exception as e:
@@ -168,15 +166,29 @@ if __name__ == "__main__":
         precio = 639.10
         
     if precio:
+        # COMPROBACIÓN DE BAJADA BRUSCA ANTES DE GUARDAR
+        if os.path.exists(ARCHIVO_CSV):
+            try:
+                df_previo = pd.read_csv(ARCHIVO_CSV)
+                if not df_previo.empty:
+                    ultimo_precio_registrado = float(df_previo['Precio'].iloc[-1])
+                    
+                    # Si el precio actual baja 50€ o más respecto al último guardado
+                    if precio < (ultimo_precio_registrado - 50):
+                        alerta_brusca = f"🚨 **¡CHOLLO / BAJADA BRUSCA DE PRECIO!** 🚨\n\nEl precio ha caído de **{ultimo_precio_registrado:.2f} €** a **{precio:.2f} €**"
+                        enviar_notificacion_telegram(alerta_brusca)
+            except Exception as e:
+                print(f"Error comprobando bajada brusca: {e}")
+
         registrar_precio(precio)
         generar_grafico()
         
-        # Enviar notificación de éxito a Telegram
+        # Enviar notificación normal de éxito a Telegram
         hora_espana = (datetime.utcnow() + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M")
         mensaje = f"📷 **Rastreador Lumix**\n\nFecha: {hora_espana}\nPrecio detectado: **{precio:.2f} €**"
         enviar_notificacion_telegram(mensaje)
     else:
-        # SI FALLA AMAZON, QUE TAMBIÉN TE AVISE POR TELEGRAM Y NO SE QUEDE MUDO
+        # SI FALLA AMAZON
         hora_espana = (datetime.utcnow() + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M")
         mensaje_error = f"⚠️ **Rastreador Lumix**\n\nFecha: {hora_espana}\nNo se ha podido capturar el precio de Amazon en esta ejecución (posible bloqueo temporal)."
         enviar_notificacion_telegram(mensaje_error)
