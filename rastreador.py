@@ -45,9 +45,12 @@ def obtener_precio_amazon_directo(url, intentos=3):
                 args=["--no-sandbox", "--disable-setuid-sandbox"]
             )
             context = browser.new_context(
-                **iphone,
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                viewport={"width": 1920, "height": 1080},
                 locale="es-ES",
-                timezone_id="Europe/Madrid"
+                timezone_id="Europe/Madrid",
+                # Forzamos una geolocalización o permisos limpios si fuera necesario
+                permissions=["geolocation"]
             )
             
             page = context.new_page()
