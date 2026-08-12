@@ -46,5 +46,6 @@ jobs:
           echo "No hay cambios nuevos en los datos."
         else
           git commit -m "Actualizar historial y gráfica de precios"
+          git pull --rebase origin main
           git push origin main
         fi
