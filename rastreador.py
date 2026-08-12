@@ -75,9 +75,10 @@ def obtener_precio_amazon_directo(url, intentos=3):
                             elif isinstance(offers, dict):
                                 val = float(offers.get("price", 0))
                             
+                            # Si encontramos el precio, le aplicamos el 21% de IVA para que coincida con el real de España
                             if val > 100:
-                                precio_num = val
-                                print(f"¡Éxito desde JSON-LD en intento {intento}! Precio: {precio_num:.2f}€")
+                                precio_num = round(val * 1.21, 2) # <-- ¡Aquí aplicamos el 21% de IVA!
+                                print(f"¡Éxito desde JSON-LD en intento {intento}! Precio con IVA: {precio_num:.2f}€")
                                 break
                     except Exception:
                         continue
@@ -97,7 +98,7 @@ def obtener_precio_amazon_directo(url, intentos=3):
                             if match:
                                 val = float(match.group(1).replace(',', '.'))
                                 if val > 100:
-                                    precio_num = val
+                                    precio_num = round(val * 1.21, 2) # <-- ¡Aquí también aplicamos el 21% de IVA!
                                     break
 
             except Exception as e:
