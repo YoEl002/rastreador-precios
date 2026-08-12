@@ -40,5 +40,5 @@ jobs:
     - name: Subir y guardar archivos en el repositorio
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        commit_message: "Actualización automática de precios"
-        file_pattern: "historial_precios.csv"
+        commit_message: "Actualización automática de precios y gráfica"
+        file_pattern: "historial_precios.csv grafico_precios.png"
