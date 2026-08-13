@@ -77,16 +77,16 @@
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
             <h3 class="text-base font-semibold text-slate-200">Evolución de Precio Interactiva</h3>
             <div id="contenedor-filtros" class="flex space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
-                <button onclick="filtrarTiempo('7d')" id="filt-7d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">7 Días</button>
+                <button onclick="filtrarTiempo('7d')" id="filt-7d" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-amber-400 shadow-sm">7 Días</button>
                 <button onclick="filtrarTiempo('30d')" id="filt-30d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">30 Días</button>
-                <button onclick="filtrarTiempo('todo')" id="filt-todo" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-amber-400 shadow-sm">Todo</button>
+                <button onclick="filtrarTiempo('todo')" id="filt-todo" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">Todo</button>
             </div>
         </div>
 
         <div class="space-y-6">
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-xl">
                 <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3 text-xs text-slate-400">
-                    <span>Gráfica optimizada sin puntos intermedios</span>
+                    <span>Historial de precios</span>
                     <a href="https://www.amazon.es/dp/B01NCTOKPM" target="_blank" class="font-semibold text-amber-400 hover:underline">Ver en Amazon &rarr;</a>
                 </div>
                 <div class="bg-slate-950/60 rounded-xl p-4 border border-slate-800/50 relative h-80 md:h-[420px]">
@@ -100,7 +100,7 @@
                 <span class="font-semibold text-slate-300">Última comprobación:</span> <span id="info-ultima-fecha">--</span>
             </div>
             <div>
-                <span class="font-semibold text-slate-300">Próxima actualización:</span> <span id="info-proxima-fecha" class="text-amber-400 font-bold">--</span>
+                <span class="font-semibold text-slate-300">Próxima actualización:</span> <span id="info-proxima-fecha" class="text-amber-400 font-bold">--/--, --:--</span>
             </div>
             <div>
                 <span class="font-semibold text-slate-300">Frecuencia:</span> Cada 3 horas
@@ -134,19 +134,16 @@
                 document.getElementById('kpi-max').innerText = max.toFixed(2) + ' €';
                 document.getElementById('kpi-total').innerText = globalData.length;
                 
-                // Mostrar última fecha
                 const ultimaFechaStr = globalData[globalData.length - 1].Fecha;
                 document.getElementById('info-ultima-fecha').innerText = ultimaFechaStr;
 
-                // Calcular y mostrar la próxima actualización (sumando 3 horas al último registro)
+                // Calcular la próxima actualización (sumando 3 horas al último registro)
                 const fechaUltima = new Date(ultimaFechaStr);
                 if (!isNaN(fechaUltima)) {
                     fechaUltima.setHours(fechaUltima.getHours() + 3);
                     document.getElementById('info-proxima-fecha').innerText = fechaUltima.toLocaleString('es-ES', { 
                         day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
                     });
-                } else {
-                    document.getElementById('info-proxima-fecha').innerText = "Pronto";
                 }
 
                 const badgeTendencia = document.getElementById('kpi-tendencia');
@@ -169,7 +166,8 @@
                     badgeTendencia.innerHTML = `Primer registro`;
                 }
 
-                renderizarGrafica(globalData);
+                // CAMBIO 1: Forzar que al cargar pinte directamente la gráfica filtrada a los últimos 7 días
+                filtrarTiempo('7d');
             }
         });
 
