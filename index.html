@@ -93,7 +93,7 @@
     </main>
 
     <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-        <p>Panel de control inteligente<br>para seguimiento de precios de Amazon</p>
+        <p style="line-height: 1.5; padding: 0 15px;">Panel de control inteligente<br>para seguimiento de precios de Amazon</p>
     </footer>
 
     <script>
@@ -176,7 +176,7 @@
                     plugins: { legend: { display: false } },
                     scales: {
                         x: {
-                            ticks: { color: '#94a3b8', font: { size: 10 } },
+                            display: false, // <-- AQUÍ SE OCULTAN LAS FECHAS DEBAJO DE LA GRÁFICA
                             grid: { color: '#1e293b' }
                         },
                         y: {
