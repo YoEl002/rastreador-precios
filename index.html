@@ -139,12 +139,16 @@
                 const ultimaFechaStr = globalData[globalData.length - 1].Fecha;
                 document.getElementById('info-ultima-fecha').innerText = ultimaFechaStr;
 
-                // Calcular la próxima actualización (forzando día y mes con 2 dígitos: DD/MM, HH:MM)
+                // Calcular la próxima actualización sumando 3 horas al último registro
                 const fechaUltima = new Date(ultimaFechaStr);
                 if (!isNaN(fechaUltima)) {
                     fechaUltima.setHours(fechaUltima.getHours() + 3);
-                    const options = { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' };
-                    document.getElementById('info-proxima-fecha').innerText = fechaUltima.toLocaleDateString('es-ES', options) + ', ' + fechaUltima.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                    const dia = String(fechaUltima.getDate()).padStart(2, '0');
+                    const mes = String(fechaUltima.getMonth() + 1).padStart(2, '0');
+                    const hora = String(fechaUltima.getHours()).padStart(2, '0');
+                    const min = String(fechaUltima.getMinutes()).padStart(2, '0');
+                    
+                    document.getElementById('info-proxima-fecha').innerText = `${dia}/${mes}, ${hora}:${min}`;
                 }
 
                 const badgeTendencia = document.getElementById('kpi-tendencia');
@@ -167,7 +171,6 @@
                     badgeTendencia.innerHTML = `Primer registro`;
                 }
 
-                // Arrancar por defecto en 7 días
                 filtrarTiempo('7d');
             }
         });
