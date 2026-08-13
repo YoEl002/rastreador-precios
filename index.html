@@ -46,9 +46,9 @@
             <div class="bg-black border border-neutral-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
                 <div>
                     <p class="text-xs text-neutral-400 font-medium">Mínimo Histórico</p>
-                    <p id="kpi-min" class="text-xl md:text-2xl font-bold text-white mt-1">-- €</p>
+                    <p id="kpi-min" class="text-xl md:text-2xl font-bold text-emerald-400 mt-1">-- €</p>
                 </div>
-                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-neutral-900 text-neutral-400 border border-neutral-800 w-fit">
+                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit">
                     Precio más bajo
                 </div>
             </div>
@@ -56,9 +56,9 @@
             <div class="bg-black border border-neutral-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
                 <div>
                     <p class="text-xs text-neutral-400 font-medium">Máximo Histórico</p>
-                    <p id="kpi-max" class="text-xl md:text-2xl font-bold text-white mt-1">-- €</p>
+                    <p id="kpi-max" class="text-xl md:text-2xl font-bold text-rose-400 mt-1">-- €</p>
                 </div>
-                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-neutral-900 text-neutral-400 border border-neutral-800 w-fit">
+                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20 w-fit">
                     Precio más alto
                 </div>
             </div>
@@ -139,7 +139,6 @@
                 const ultimaFechaStr = globalData[globalData.length - 1].Fecha;
                 document.getElementById('info-ultima-fecha').innerText = ultimaFechaStr;
 
-                // Calcular la próxima actualización sumando 3 horas al último registro
                 const fechaUltima = new Date(ultimaFechaStr);
                 if (!isNaN(fechaUltima)) {
                     fechaUltima.setHours(fechaUltima.getHours() + 3);
@@ -157,7 +156,6 @@
                     const diff = actual - anterior;
                     const porc = ((diff / anterior) * 100).toFixed(1);
 
-                    // Reintroducimos Verde y Rojo en el cuadrado de tendencia
                     if (diff < 0) {
                         badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit";
                         badgeTendencia.innerHTML = `▼ ${Math.abs(diff).toFixed(2)} € (${Math.abs(porc)}%)`;
@@ -181,10 +179,9 @@
             const fechas = datos.map(row => row.Fecha);
             const precios = datos.map(row => parseFloat(row.Precio));
 
-            // Reintroducimos Verde y Rojo en la línea de la gráfica según suba o baje
-            let colorLinea = '#10b981'; // Verde por defecto (bajada o neutro)
+            let colorLinea = '#10b981';
             if (precios.length >= 2 && precios[precios.length - 1] > precios[precios.length - 2]) {
-                colorLinea = '#ef4444'; // Rojo si ha subido
+                colorLinea = '#ef4444';
             }
 
             if (miGrafica) miGrafica.destroy();
@@ -197,7 +194,7 @@
                         label: 'Precio (€)',
                         data: precios,
                         borderColor: colorLinea,
-                        backgroundColor: colorLinea + '15', // Sutil relleno del color correspondiente
+                        backgroundColor: colorLinea + '15',
                         borderWidth: 2.5,
                         pointRadius: 0,
                         pointHoverRadius: 6,
