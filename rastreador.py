@@ -5,7 +5,8 @@ import requests
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from playwright.sync_api import sync_playwright
 
 URL_PRODUCTO = "https://www.amazon.es/dp/B01NCTOKPM"
@@ -123,9 +124,10 @@ def obtener_precio_amazon_directo(url, intentos=3):
     return None
 
 def registrar_precio(precio):
-    # Calculamos la hora de España (+2 horas respecto a UTC en horario de verano)
-    hora_espana = datetime.utcnow() + timedelta(hours=2)
-    fecha_actual = hora_espana.strftime("%Y-%m-%d %H:%M")
+    # Obtenemos la hora exacta en España (detecta automáticamente verano e invierno)
+    zona_madrid = ZoneInfo("Europe/Madrid")
+    ahora_espana = datetime.now(zona_madrid)
+    fecha_actual = ahora_espana.strftime("%Y-%m-%d %H:%M")
     
     precio_formateado = f"{precio:.2f}"
     nuevo_registro = pd.DataFrame([{"Fecha": fecha_actual, "Precio": precio_formateado}])
@@ -183,13 +185,15 @@ if __name__ == "__main__":
         registrar_precio(precio)
         generar_grafico()
         
-        # Enviar notificación normal de éxito a Telegram
-        hora_espana = (datetime.utcnow() + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M")
-        mensaje = f"📷 **Lumix Tracker**\n\nFecha: {hora_espana}\nPrecio detectado: **{precio:.2f} €**"
+        # Enviar notificación normal de éxito a Telegram con la hora de España adaptada
+        zona_madrid = ZoneInfo("Europe/Madrid")
+        hora_espana_str = datetime.now(zona_madrid).strftime("%d/%m/%Y %H:%M")
+        mensaje = f"📷 **Lumix Tracker**\n\nFecha: {hora_espana_str}\nPrecio detectado: **{precio:.2f} €**"
         enviar_notificacion_telegram(mensaje)
     else:
         # SI FALLA AMAZON
-        hora_espana = (datetime.utcnow() + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M")
-        mensaje_error = f"⚠️ **Lumix Tracker**\n\nFecha: {hora_espana}\nNo se ha podido capturar el precio de Amazon en esta ejecución (posible bloqueo temporal)."
+        zona_madrid = ZoneInfo("Europe/Madrid")
+        hora_espana_str = datetime.now(zona_madrid).strftime("%d/%m/%Y %H:%M")
+        mensaje_error = f"⚠️ **Lumix Tracker**\n\nFecha: {hora_espana_str}\nNo se ha podido capturar el precio de Amazon en esta ejecución (posible bloqueo temporal)."
         enviar_notificacion_telegram(mensaje_error)
         print("No se pudo obtener el precio de Amazon.")
