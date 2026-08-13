@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -29,7 +30,7 @@
         
         <div class="flex space-x-2 border-b border-slate-800 pb-4">
             <button onclick="cambiarPestana('grafica')" id="btn-grafica" class="px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20">
-                📊 Gráfica y Resumen
+                📊 Gráfica Interactiva
             </button>
             <button onclick="cambiarPestana('tabla')" id="btn-tabla" class="px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800">
                 📋 Historial en Tabla
@@ -43,7 +44,7 @@
                 
                 <div class="flex flex-wrap gap-4 items-center justify-between pt-4 border-t border-slate-800/80">
                     <div class="text-xs text-slate-400">
-                        🕒 Actualización automática diaria
+                        🕒 Datos leídos directamente desde tu CSV en GitHub
                     </div>
                     <a href="https://www.amazon.es/dp/B01NCTOKPM" target="_blank" class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all shadow-md shadow-amber-500/20">
                         Ver en Amazon &rarr;
@@ -53,10 +54,10 @@
 
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-xl">
                 <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
-                    <h3 class="text-base font-semibold text-slate-200">Evolución Histórica de Precios</h3>
+                    <h3 class="text-base font-semibold text-slate-200">Evolución de Precio Dinámica</h3>
                 </div>
-                <div class="flex justify-center items-center bg-slate-950/60 rounded-xl p-3 border border-slate-800/50 overflow-hidden">
-                    <img src="grafico_precios.png" alt="Gráfica de precios" class="w-full h-auto rounded-lg object-contain">
+                <div class="bg-slate-950/60 rounded-xl p-4 border border-slate-800/50 relative h-72 md:h-96">
+                    <canvas id="graficaPrecios"></canvas>
                 </div>
             </div>
         </div>
@@ -83,7 +84,7 @@
     </main>
 
     <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-        <p>Panel impulsado por GitHub Actions, Playwright y Python.</p>
+        <p>Panel impulsado por GitHub Pages, Chart.js y Python.</p>
     </footer>
 
     <script>
@@ -106,25 +107,76 @@
             }
         }
 
-        // Cargar y parsear el CSV automáticamente al entrar a la web
+        // Leer el CSV y construir la tabla y la gráfica interactiva
         Papa.parse("historial_precios.csv", {
             download: true,
             header: true,
             complete: function(results) {
+                const datosValidos = results.data.filter(row => row.Fecha && row.Precio);
+                
+                const fechas = datosValidos.map(row => row.Fecha);
+                const precios = datosValidos.map(row => parseFloat(row.Precio));
+
+                // 1. Rellenar la tabla
                 const tbody = document.getElementById('tabla-cuerpo');
                 tbody.innerHTML = "";
-                // Recorremos los datos del más reciente al más antiguo
-                const datosInvertidos = results.data.reverse();
+                [...datosValidos].reverse().forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-800/50 transition-colors";
+                    tr.innerHTML = `
+                        <td class="py-3 px-4">${row.Fecha}</td>
+                        <td class="py-3 px-4 font-semibold text-amber-400">${row.Precio} €</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                // 2. Crear la gráfica interactiva con Chart.js
+                const ctx = document.getElementById('graficaPrecios').getContext('2d');
                 
-                datosInvertidos.forEach(row => {
-                    if (row.Fecha && row.Precio) {
-                        const tr = document.createElement('tr');
-                        tr.className = "hover:bg-slate-800/50 transition-colors";
-                        tr.innerHTML = `
-                            <td class="py-3 px-4">${row.Fecha}</td>
-                            <td class="py-3 px-4 font-semibold text-amber-400">${row.Precio} €</td>
-                        `;
-                        tbody.appendChild(tr);
+                // Color dinámico: si el último precio es menor o igual que el anterior, verde; si sube, rojo
+                let colorLinea = '#10b981'; // Verde por defecto
+                if (precios.length >= 2) {
+                    if (precios[precios.length - 1] > precios[precios.length - 2]) {
+                        colorLinea = '#ef4444'; // Rojo si ha subido
+                    }
+                }
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: fechas,
+                        datasets: [{
+                            label: 'Precio (€)',
+                            data: precios,
+                            borderColor: colorLinea,
+                            backgroundColor: colorLinea + '20',
+                            borderWidth: 3,
+                            pointBackgroundColor: colorLinea,
+                            pointRadius: 5,
+                            pointHoverRadius: 8,
+                            fill: true,
+                            tension: 0.2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#94a3b8', font: { size: 10 } },
+                                grid: { color: '#1e293b' }
+                            },
+                            y: {
+                                ticks: { 
+                                    color: '#94a3b8',
+                                    callback: function(value) { return value + ' €'; }
+                                },
+                                grid: { color: '#1e293b' }
+                            }
+                        }
                     }
                 });
             }
