@@ -100,10 +100,10 @@
                 <span class="font-semibold text-slate-300">Última comprobación:</span> <span id="info-ultima-fecha">--</span>
             </div>
             <div>
-                <span class="font-semibold text-slate-300">Frecuencia:</span> Cada 3 horas (Automático)
+                <span class="font-semibold text-slate-300">Próxima actualización:</span> <span id="info-proxima-fecha" class="text-amber-400 font-bold">--</span>
             </div>
             <div>
-                <span class="font-semibold text-slate-300">Plataforma:</span> GitHub Actions & Pages
+                <span class="font-semibold text-slate-300">Frecuencia:</span> Cada 3 horas
             </div>
         </div>
 
@@ -133,7 +133,21 @@
                 document.getElementById('kpi-min').innerText = min.toFixed(2) + ' €';
                 document.getElementById('kpi-max').innerText = max.toFixed(2) + ' €';
                 document.getElementById('kpi-total').innerText = globalData.length;
-                document.getElementById('info-ultima-fecha').innerText = globalData[globalData.length - 1].Fecha;
+                
+                // Mostrar última fecha
+                const ultimaFechaStr = globalData[globalData.length - 1].Fecha;
+                document.getElementById('info-ultima-fecha').innerText = ultimaFechaStr;
+
+                // Calcular y mostrar la próxima actualización (sumando 3 horas al último registro)
+                const fechaUltima = new Date(ultimaFechaStr);
+                if (!isNaN(fechaUltima)) {
+                    fechaUltima.setHours(fechaUltima.getHours() + 3);
+                    document.getElementById('info-proxima-fecha').innerText = fechaUltima.toLocaleString('es-ES', { 
+                        day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
+                    });
+                } else {
+                    document.getElementById('info-proxima-fecha').innerText = "Pronto";
+                }
 
                 const badgeTendencia = document.getElementById('kpi-tendencia');
                 if (precios.length >= 2) {
