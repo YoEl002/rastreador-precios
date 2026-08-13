@@ -12,17 +12,17 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#020617">
+    <meta name="theme-color" content="#000000">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-white">
+<body class="bg-black text-white min-h-screen flex flex-col justify-between selection:bg-white selection:text-black">
 
-    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-4 px-4 shadow-lg">
+    <header class="bg-black/80 backdrop-blur-md border-b border-neutral-800 sticky top-0 z-50 py-4 px-4 shadow-lg">
         <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <div>
-                <h1 class="text-base md:text-lg font-bold tracking-tight text-amber-400">Panasonic LUMIX G VARIO 100-300mm</h1>
-                <p class="text-xs text-slate-400 font-mono mt-0.5">Ref: H-FSA100300 II</p>
+                <h1 class="text-base md:text-lg font-bold tracking-tight text-white">Panasonic LUMIX G VARIO 100-300mm</h1>
+                <p class="text-xs text-neutral-400 font-mono mt-0.5">Ref: H-FSA100300 II</p>
             </div>
-            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-neutral-900 text-neutral-300 border border-neutral-800">
                 Monitoreo de Precio
             </span>
         </div>
@@ -31,87 +31,87 @@
     <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full space-y-6">
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl relative overflow-hidden flex flex-col justify-between">
+            <div class="bg-black border border-neutral-800 rounded-2xl p-4 shadow-xl relative overflow-hidden flex flex-col justify-between">
                 <div>
-                    <p class="text-xs text-slate-400 font-medium">Precio Actual</p>
+                    <p class="text-xs text-neutral-400 font-medium">Precio Actual</p>
                     <div class="flex items-baseline space-x-2 mt-1">
-                        <p id="kpi-actual" class="text-xl md:text-2xl font-bold text-amber-400">-- €</p>
+                        <p id="kpi-actual" class="text-xl md:text-2xl font-bold text-white">-- €</p>
                     </div>
                 </div>
-                <div id="kpi-tendencia" class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 w-fit">
+                <div id="kpi-tendencia" class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-neutral-900 text-neutral-400 w-fit border border-neutral-800">
                     Calculando...
                 </div>
             </div>
             
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+            <div class="bg-black border border-neutral-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
                 <div>
-                    <p class="text-xs text-slate-400 font-medium">Mínimo Histórico</p>
-                    <p id="kpi-min" class="text-xl md:text-2xl font-bold text-emerald-400 mt-1">-- €</p>
+                    <p class="text-xs text-neutral-400 font-medium">Mínimo Histórico</p>
+                    <p id="kpi-min" class="text-xl md:text-2xl font-bold text-white mt-1">-- €</p>
                 </div>
-                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit">
+                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-neutral-900 text-neutral-400 border border-neutral-800 w-fit">
                     Precio más bajo
                 </div>
             </div>
             
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+            <div class="bg-black border border-neutral-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
                 <div>
-                    <p class="text-xs text-slate-400 font-medium">Máximo Histórico</p>
-                    <p id="kpi-max" class="text-xl md:text-2xl font-bold text-rose-400 mt-1">-- €</p>
+                    <p class="text-xs text-neutral-400 font-medium">Máximo Histórico</p>
+                    <p id="kpi-max" class="text-xl md:text-2xl font-bold text-white mt-1">-- €</p>
                 </div>
-                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20 w-fit">
+                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-neutral-900 text-neutral-400 border border-neutral-800 w-fit">
                     Precio más alto
                 </div>
             </div>
             
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+            <div class="bg-black border border-neutral-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
                 <div>
-                    <p class="text-xs text-slate-400 font-medium">Total Registros</p>
-                    <p id="kpi-total" class="text-xl md:text-2xl font-bold text-slate-200 mt-1">--</p>
+                    <p class="text-xs text-neutral-400 font-medium">Total Registros</p>
+                    <p id="kpi-total" class="text-xl md:text-2xl font-bold text-white mt-1">--</p>
                 </div>
-                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 w-fit">
+                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-neutral-900 text-neutral-300 w-fit border border-neutral-800">
                     Mediciones totales
                 </div>
             </div>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
-            <h3 class="text-base font-semibold text-slate-200">Evolución de Precio Interactiva</h3>
-            <div id="contenedor-filtros" class="flex flex-wrap gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
-                <button onclick="filtrarTiempo('1d')" id="filt-1d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">1 día</button>
-                <button onclick="filtrarTiempo('3d')" id="filt-3d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">3 días</button>
-                <button onclick="filtrarTiempo('7d')" id="filt-7d" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-amber-400 shadow-sm">7 días</button>
-                <button onclick="filtrarTiempo('30d')" id="filt-30d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">30 días</button>
-                <button onclick="filtrarTiempo('todo')" id="filt-todo" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">Todo</button>
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+            <h3 class="text-base font-semibold text-white">Evolución de Precio Interactiva</h3>
+            <div id="contenedor-filtros" class="flex flex-wrap gap-1 bg-black p-1 rounded-xl border border-neutral-800">
+                <button onclick="filtrarTiempo('1d')" id="filt-1d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">1 día</button>
+                <button onclick="filtrarTiempo('3d')" id="filt-3d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">3 días</button>
+                <button onclick="filtrarTiempo('7d')" id="filt-7d" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-800 text-white shadow-sm border border-neutral-700">7 días</button>
+                <button onclick="filtrarTiempo('30d')" id="filt-30d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">30 días</button>
+                <button onclick="filtrarTiempo('todo')" id="filt-todo" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">Todo</button>
             </div>
         </div>
 
         <div class="space-y-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-xl">
-                <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3 text-xs text-slate-400">
+            <div class="bg-black border border-neutral-800 rounded-2xl p-4 md:p-6 shadow-xl">
+                <div class="flex items-center justify-between mb-4 border-b border-neutral-800 pb-3 text-xs text-neutral-400">
                     <span>Historial de precios</span>
-                    <a href="https://www.amazon.es/dp/B01NCTOKPM" target="_blank" class="font-semibold text-amber-400 hover:underline">Ver en Amazon &rarr;</a>
+                    <a href="https://www.amazon.es/dp/B01NCTOKPM" target="_blank" class="font-semibold text-white hover:underline">Ver en Amazon &rarr;</a>
                 </div>
-                <div class="bg-slate-950/60 rounded-xl p-4 border border-slate-800/50 relative h-80 md:h-[420px]">
+                <div class="bg-black rounded-xl p-4 border border-neutral-800/50 relative h-80 md:h-[420px]">
                     <canvas id="graficaPrecios"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
+        <div class="bg-black border border-neutral-800 rounded-2xl p-5 shadow-xl flex flex-wrap items-center justify-between gap-4 text-xs text-neutral-400">
             <div>
-                <span class="font-semibold text-slate-300">Última comprobación:</span> <span id="info-ultima-fecha">--</span>
+                <span class="font-semibold text-neutral-300">Última comprobación:</span> <span id="info-ultima-fecha">--</span>
             </div>
             <div>
-                <span class="font-semibold text-slate-300">Próxima actualización:</span> <span id="info-proxima-fecha" class="text-amber-400 font-bold">--/--, --:--</span>
+                <span class="font-semibold text-neutral-300">Próxima actualización:</span> <span id="info-proxima-fecha" class="text-white font-bold">--/--, --:--</span>
             </div>
             <div>
-                <span class="font-semibold text-slate-300">Frecuencia:</span> Cada 3 horas
+                <span class="font-semibold text-neutral-300">Frecuencia:</span> Cada 3 horas
             </div>
         </div>
 
     </main>
 
-    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+    <footer class="bg-black border-t border-neutral-800 py-6 text-center text-xs text-neutral-500">
         <p style="line-height: 1.5; padding: 0 15px;">&copy; Lumix Tracker. Todos los derechos reservados.</p>
     </footer>
 
@@ -157,6 +157,7 @@
                     const diff = actual - anterior;
                     const porc = ((diff / anterior) * 100).toFixed(1);
 
+                    // Reintroducimos Verde y Rojo en el cuadrado de tendencia
                     if (diff < 0) {
                         badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit";
                         badgeTendencia.innerHTML = `▼ ${Math.abs(diff).toFixed(2)} € (${Math.abs(porc)}%)`;
@@ -164,7 +165,7 @@
                         badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20 w-fit";
                         badgeTendencia.innerHTML = `▲ +${diff.toFixed(2)} € (+${porc}%)`;
                     } else {
-                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 w-fit";
+                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-neutral-900 text-neutral-400 w-fit border border-neutral-800";
                         badgeTendencia.innerHTML = `▬ Sin cambios`;
                     }
                 } else {
@@ -180,9 +181,10 @@
             const fechas = datos.map(row => row.Fecha);
             const precios = datos.map(row => parseFloat(row.Precio));
 
-            let colorLinea = '#10b981';
+            // Reintroducimos Verde y Rojo en la línea de la gráfica según suba o baje
+            let colorLinea = '#10b981'; // Verde por defecto (bajada o neutro)
             if (precios.length >= 2 && precios[precios.length - 1] > precios[precios.length - 2]) {
-                colorLinea = '#ef4444';
+                colorLinea = '#ef4444'; // Rojo si ha subido
             }
 
             if (miGrafica) miGrafica.destroy();
@@ -195,12 +197,12 @@
                         label: 'Precio (€)',
                         data: precios,
                         borderColor: colorLinea,
-                        backgroundColor: colorLinea + '15',
-                        borderWidth: 3,
+                        backgroundColor: colorLinea + '15', // Sutil relleno del color correspondiente
+                        borderWidth: 2.5,
                         pointRadius: 0,
                         pointHoverRadius: 6,
                         fill: true,
-                        tension: 0.3
+                        tension: 0.2
                     }]
                 },
                 options: {
@@ -210,14 +212,14 @@
                     scales: {
                         x: {
                             display: false,
-                            grid: { color: '#1e293b' }
+                            grid: { display: false }
                         },
                         y: {
                             ticks: { 
                                 color: '#94a3b8',
                                 callback: function(value) { return value + ' €'; }
                             },
-                            grid: { color: '#1e293b' }
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
                         }
                     }
                 }
@@ -228,9 +230,9 @@
             ['1d', '3d', '7d', '30d', 'todo'].forEach(f => {
                 const btn = document.getElementById('filt-' + f);
                 if (f === filtro) {
-                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-amber-400 shadow-sm";
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-800 text-white shadow-sm border border-neutral-700";
                 } else {
-                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all";
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all";
                 }
             });
 
