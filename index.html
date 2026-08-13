@@ -76,9 +76,11 @@
 
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
             <h3 class="text-base font-semibold text-slate-200">Evolución de Precio Interactiva</h3>
-            <div id="contenedor-filtros" class="flex space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
-                <button onclick="filtrarTiempo('7d')" id="filt-7d" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-amber-400 shadow-sm">7 Días</button>
-                <button onclick="filtrarTiempo('30d')" id="filt-30d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">30 Días</button>
+            <div id="contenedor-filtros" class="flex flex-wrap gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                <button onclick="filtrarTiempo('1d')" id="filt-1d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">1 día</button>
+                <button onclick="filtrarTiempo('3d')" id="filt-3d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">3 días</button>
+                <button onclick="filtrarTiempo('7d')" id="filt-7d" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-amber-400 shadow-sm">7 días</button>
+                <button onclick="filtrarTiempo('30d')" id="filt-30d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">30 días</button>
                 <button onclick="filtrarTiempo('todo')" id="filt-todo" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">Todo</button>
             </div>
         </div>
@@ -137,13 +139,12 @@
                 const ultimaFechaStr = globalData[globalData.length - 1].Fecha;
                 document.getElementById('info-ultima-fecha').innerText = ultimaFechaStr;
 
-                // Calcular la próxima actualización (sumando 3 horas al último registro)
+                // Calcular la próxima actualización (forzando día y mes con 2 dígitos: DD/MM, HH:MM)
                 const fechaUltima = new Date(ultimaFechaStr);
                 if (!isNaN(fechaUltima)) {
                     fechaUltima.setHours(fechaUltima.getHours() + 3);
-                    document.getElementById('info-proxima-fecha').innerText = fechaUltima.toLocaleString('es-ES', { 
-                        day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
-                    });
+                    const options = { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' };
+                    document.getElementById('info-proxima-fecha').innerText = fechaUltima.toLocaleDateString('es-ES', options) + ', ' + fechaUltima.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
                 }
 
                 const badgeTendencia = document.getElementById('kpi-tendencia');
@@ -166,7 +167,7 @@
                     badgeTendencia.innerHTML = `Primer registro`;
                 }
 
-                // CAMBIO 1: Forzar que al cargar pinte directamente la gráfica filtrada a los últimos 7 días
+                // Arrancar por defecto en 7 días
                 filtrarTiempo('7d');
             }
         });
@@ -221,7 +222,7 @@
         }
 
         function filtrarTiempo(filtro) {
-            ['7d', '30d', 'todo'].forEach(f => {
+            ['1d', '3d', '7d', '30d', 'todo'].forEach(f => {
                 const btn = document.getElementById('filt-' + f);
                 if (f === filtro) {
                     btn.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-amber-400 shadow-sm";
@@ -233,7 +234,15 @@
             let datosFiltrados = globalData;
             const ahora = new Date();
 
-            if (filtro === '7d') {
+            if (filtro === '1d') {
+                const limite = new Date();
+                limite.setDate(ahora.getDate() - 1);
+                datosFiltrados = globalData.filter(row => new Date(row.Fecha) >= limite);
+            } else if (filtro === '3d') {
+                const limite = new Date();
+                limite.setDate(ahora.getDate() - 3);
+                datosFiltrados = globalData.filter(row => new Date(row.Fecha) >= limite);
+            } else if (filtro === '7d') {
                 const limite = new Date();
                 limite.setDate(ahora.getDate() - 7);
                 datosFiltrados = globalData.filter(row => new Date(row.Fecha) >= limite);
