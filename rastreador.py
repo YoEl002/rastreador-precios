@@ -185,11 +185,11 @@ if __name__ == "__main__":
         
         # Enviar notificación normal de éxito a Telegram
         hora_espana = (datetime.utcnow() + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M")
-        mensaje = f"📷 **Rastreador Lumix**\n\nFecha: {hora_espana}\nPrecio detectado: **{precio:.2f} €**"
+        mensaje = f"📷 **Lumix Tracker**\n\nFecha: {hora_espana}\nPrecio detectado: **{precio:.2f} €**"
         enviar_notificacion_telegram(mensaje)
     else:
         # SI FALLA AMAZON
         hora_espana = (datetime.utcnow() + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M")
-        mensaje_error = f"⚠️ **Rastreador Lumix**\n\nFecha: {hora_espana}\nNo se ha podido capturar el precio de Amazon en esta ejecución (posible bloqueo temporal)."
+        mensaje_error = f"⚠️ **Lumix Tracker**\n\nFecha: {hora_espana}\nNo se ha podido capturar el precio de Amazon en esta ejecución (posible bloqueo temporal)."
         enviar_notificacion_telegram(mensaje_error)
         print("No se pudo obtener el precio de Amazon.")
