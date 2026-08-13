@@ -1,0 +1,16 @@
+{
+  "name": "Rastreador Lumix 100-300mm",
+  "short_name": "Lumix Tracker",
+  "start_url": "/panel-precios/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "https://images.emojiterra.com/google/android-12l/512px/1f4f8.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
