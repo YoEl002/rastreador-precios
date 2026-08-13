@@ -31,29 +31,46 @@
     <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full space-y-6">
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl relative overflow-hidden">
-                <p class="text-xs text-slate-400 font-medium">Precio Actual</p>
-                <div class="flex items-baseline space-x-2 mt-1">
-                    <p id="kpi-actual" class="text-xl md:text-2xl font-bold text-amber-400">-- €</p>
+            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Precio Actual</p>
+                    <div class="flex items-baseline space-x-2 mt-1">
+                        <p id="kpi-actual" class="text-xl md:text-2xl font-bold text-amber-400">-- €</p>
+                    </div>
                 </div>
-                <div id="kpi-tendencia" class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">
+                <div id="kpi-tendencia" class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 w-fit">
                     Calculando...
                 </div>
             </div>
             
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl">
-                <p class="text-xs text-slate-400 font-medium">Mínimo Histórico</p>
-                <p id="kpi-min" class="text-xl md:text-2xl font-bold text-emerald-400 mt-1">-- €</p>
+            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Mínimo Histórico</p>
+                    <p id="kpi-min" class="text-xl md:text-2xl font-bold text-emerald-400 mt-1">-- €</p>
+                </div>
+                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit">
+                    Precio más bajo
+                </div>
             </div>
             
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl">
-                <p class="text-xs text-slate-400 font-medium">Máximo Histórico</p>
-                <p id="kpi-max" class="text-xl md:text-2xl font-bold text-rose-400 mt-1">-- €</p>
+            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Máximo Histórico</p>
+                    <p id="kpi-max" class="text-xl md:text-2xl font-bold text-rose-400 mt-1">-- €</p>
+                </div>
+                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20 w-fit">
+                    Precio más alto
+                </div>
             </div>
             
-            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl">
-                <p class="text-xs text-slate-400 font-medium">Total Registros</p>
-                <p id="kpi-total" class="text-xl md:text-2xl font-bold text-slate-200 mt-1">--</p>
+            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Total Registros</p>
+                    <p id="kpi-total" class="text-xl md:text-2xl font-bold text-slate-200 mt-1">--</p>
+                </div>
+                <div class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 w-fit">
+                    Mediciones totales
+                </div>
             </div>
         </div>
 
@@ -125,13 +142,13 @@
                     const porc = ((diff / anterior) * 100).toFixed(1);
 
                     if (diff < 0) {
-                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-fit";
                         badgeTendencia.innerHTML = `▼ ${Math.abs(diff).toFixed(2)} € (${Math.abs(porc)}%)`;
                     } else if (diff > 0) {
-                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20";
+                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20 w-fit";
                         badgeTendencia.innerHTML = `▲ +${diff.toFixed(2)} € (+${porc}%)`;
                     } else {
-                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400";
+                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 w-fit";
                         badgeTendencia.innerHTML = `▬ Sin cambios`;
                     }
                 } else {
@@ -176,7 +193,7 @@
                     plugins: { legend: { display: false } },
                     scales: {
                         x: {
-                            display: false, // <-- AQUÍ SE OCULTAN LAS FECHAS DEBAJO DE LA GRÁFICA
+                            display: false,
                             grid: { color: '#1e293b' }
                         },
                         y: {
