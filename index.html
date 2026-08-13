@@ -29,19 +29,27 @@
     <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full space-y-6">
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl relative overflow-hidden">
                 <p class="text-xs text-slate-400 font-medium">Precio Actual</p>
-                <p id="kpi-actual" class="text-xl md:text-2xl font-bold text-amber-400 mt-1">-- €</p>
+                <div class="flex items-baseline space-x-2 mt-1">
+                    <p id="kpi-actual" class="text-xl md:text-2xl font-bold text-amber-400">-- €</p>
+                </div>
+                <div id="kpi-tendencia" class="mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">
+                    Calculando...
+                </div>
             </div>
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+            
+            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl">
                 <p class="text-xs text-slate-400 font-medium">Mínimo Histórico</p>
                 <p id="kpi-min" class="text-xl md:text-2xl font-bold text-emerald-400 mt-1">-- €</p>
             </div>
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+            
+            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl">
                 <p class="text-xs text-slate-400 font-medium">Máximo Histórico</p>
                 <p id="kpi-max" class="text-xl md:text-2xl font-bold text-rose-400 mt-1">-- €</p>
             </div>
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+            
+            <div class="bg-slate-900/90 backdrop-blur border border-slate-800 rounded-2xl p-4 shadow-xl">
                 <p class="text-xs text-slate-400 font-medium">Total Registros</p>
                 <p id="kpi-total" class="text-xl md:text-2xl font-bold text-slate-200 mt-1">--</p>
             </div>
@@ -137,7 +145,6 @@
             }
         }
 
-        // Cargar CSV y procesar datos
         Papa.parse("historial_precios.csv", {
             download: true,
             header: true,
@@ -145,7 +152,6 @@
                 globalData = results.data.filter(row => row.Fecha && row.Precio);
                 if (globalData.length === 0) return;
 
-                // Calcular KPIs
                 const precios = globalData.map(row => parseFloat(row.Precio));
                 const actual = precios[precios.length - 1];
                 const min = Math.min(...precios);
@@ -157,7 +163,27 @@
                 document.getElementById('kpi-total').innerText = globalData.length;
                 document.getElementById('info-ultima-fecha').innerText = globalData[globalData.length - 1].Fecha;
 
-                // Rellenar tabla
+                // Calcular tendencia respecto al registro anterior
+                const badgeTendencia = document.getElementById('kpi-tendencia');
+                if (precios.length >= 2) {
+                    const anterior = precios[precios.length - 2];
+                    const diff = actual - anterior;
+                    const porc = ((diff / anterior) * 100).toFixed(1);
+
+                    if (diff < 0) {
+                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                        badgeTendencia.innerHTML = `▼ ${Math.abs(diff).toFixed(2)} € (${Math.abs(porc)}%)`;
+                    } else if (diff > 0) {
+                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20";
+                        badgeTendencia.innerHTML = `▲ +${diff.toFixed(2)} € (+${porc}%)`;
+                    } else {
+                        badgeTendencia.className = "mt-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400";
+                        badgeTendencia.innerHTML = `▬ Sin cambios`;
+                    }
+                } else {
+                    badgeTendencia.innerHTML = `Primer registro`;
+                }
+
                 const tbody = document.getElementById('tabla-cuerpo');
                 tbody.innerHTML = "";
                 [...globalData].reverse().forEach(row => {
@@ -170,7 +196,6 @@
                     tbody.appendChild(tr);
                 });
 
-                // Dibujar gráfica inicial (Todo)
                 renderizarGrafica(globalData);
             }
         });
