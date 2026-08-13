@@ -74,22 +74,6 @@
             </div>
         </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-                <h3 class="text-sm font-semibold text-slate-200">Alerta de Precio y Telegram</h3>
-                <p class="text-xs text-slate-400 mt-0.5">Establece tu objetivo; se actualizará en GitHub para avisarte al móvil.</p>
-            </div>
-            <div class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
-                <input type="number" id="input-objetivo" placeholder="Ej: 550" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-amber-400 font-bold w-full md:w-28 focus:outline-none focus:border-amber-500">
-                <input type="password" id="input-token" placeholder="Token GitHub (ghp_...)" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 w-full md:w-40 focus:outline-none focus:border-amber-500" title="Tu token se guarda solo en tu navegador">
-                <button onclick="guardarObjetivoEnGitHub()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-4 py-2 rounded-xl text-xs transition-all whitespace-nowrap w-full sm:w-auto">Guardar</button>
-            </div>
-        </div>
-
-        <div id="alerta-chollo" class="hidden bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-4 text-center text-xs text-emerald-400 font-semibold shadow-xl animate-pulse">
-            🎉 ¡CHOLLO! El precio actual está por debajo de tu objetivo marcado.
-        </div>
-
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
             <h3 class="text-base font-semibold text-slate-200">Evolución de Precio Interactiva</h3>
             <div id="contenedor-filtros" class="flex space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
@@ -133,79 +117,6 @@
         let globalData = [];
         let miGrafica = null;
 
-        // Cargar token y objetivo guardados en el navegador al abrir la página
-        document.addEventListener("DOMContentLoaded", () => {
-            const tokenGuardado = localStorage.getItem('github_token_lumix');
-            const objetivoGuardado = localStorage.getItem('precio_objetivo_lumix');
-            if (tokenGuardado) document.getElementById('input-token').value = tokenGuardado;
-            if (objetivoGuardado) document.getElementById('input-objetivo').value = objetivoGuardado;
-        });
-
-        async function guardarObjetivoEnGitHub() {
-            const nuevoPrecio = parseFloat(document.getElementById('input-objetivo').value);
-            const token = document.getElementById('input-token').value.trim();
-
-            if (!nuevoPrecio || !token) {
-                alert("Por favor, introduce un precio y tu token de GitHub.");
-                return;
-            }
-
-            localStorage.setItem('github_token_lumix', token);
-            localStorage.setItem('precio_objetivo_lumix', nuevoPrecio);
-
-            // ⚠️ RECUERDA CAMBIAR ESTOS DOS DATOS CON LOS DE TU CUENTA Y REPOSITORIO
-            const usuario = "rastreadorlumix";
-            const repo = "panel-precios";
-            const path = "config.json";
-
-            const url = `https://api.github.com/repos/${usuario}/${repo}/contents/${path}`;
-
-            try {
-                const resGet = await fetch(url, {
-                    headers: { "Authorization": `token ${token}` }
-                });
-                if (!resGet.ok) throw new Error("No se pudo conectar con GitHub. Revisa tu Token.");
-                const fileData = await resGet.json();
-                const sha = fileData.sha;
-
-                const nuevoContenidoObj = { precio_objetivo: nuevoPrecio };
-                const contenidoBase64 = btoa(JSON.stringify(nuevoContenidoObj, null, 2));
-
-                const resPut = await fetch(url, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": `token ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: `Actualizar precio objetivo a ${nuevoPrecio}€ desde la web`,
-                        content: contenidoBase64,
-                        sha: sha
-                    })
-                });
-
-                if (resPut.ok) {
-                    alert("¡Éxito! Precio objetivo actualizado en GitHub. Telegram lo vigilará en la siguiente comprobación.");
-                    verificarCholloWeb(parseFloat(document.getElementById('kpi-actual').innerText));
-                } else {
-                    throw new Error("Error al guardar los cambios en GitHub.");
-                }
-
-            } catch (error) {
-                alert("Error: " + error.message);
-            }
-        }
-
-        function verificarCholloWeb(precioActual) {
-            const objetivo = localStorage.getItem('precio_objetivo_lumix');
-            const aviso = document.getElementById('alerta-chollo');
-            if (objetivo && !isNaN(precioActual) && precioActual <= parseFloat(objetivo)) {
-                aviso.classList.remove('hidden');
-            } else {
-                aviso.classList.add('hidden');
-            }
-        }
-
         Papa.parse("historial_precios.csv", {
             download: true,
             header: true,
@@ -223,8 +134,6 @@
                 document.getElementById('kpi-max').innerText = max.toFixed(2) + ' €';
                 document.getElementById('kpi-total').innerText = globalData.length;
                 document.getElementById('info-ultima-fecha').innerText = globalData[globalData.length - 1].Fecha;
-
-                verificarCholloWeb(actual);
 
                 const badgeTendencia = document.getElementById('kpi-tendencia');
                 if (precios.length >= 2) {
