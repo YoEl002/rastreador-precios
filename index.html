@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rastreador de Precios - Panasonic Lumix</title>
+    <title>Panel de Precios - Panasonic Lumix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -15,7 +15,7 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-white">
 
     <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 py-4 px-4 shadow-lg">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <span class="text-2xl">📷</span>
                 <h1 class="text-lg md:text-xl font-bold tracking-tight text-amber-400">Rastreador Lumix</h1>
@@ -26,35 +26,49 @@
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full space-y-6">
+    <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full space-y-6">
         
-        <div class="flex space-x-2 border-b border-slate-800 pb-4">
-            <button onclick="cambiarPestana('grafica')" id="btn-grafica" class="px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20">
-                📊 Gráfica Interactiva
-            </button>
-            <button onclick="cambiarPestana('tabla')" id="btn-tabla" class="px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800">
-                📋 Historial en Tabla
-            </button>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                <p class="text-xs text-slate-400 font-medium">Precio Actual</p>
+                <p id="kpi-actual" class="text-xl md:text-2xl font-bold text-amber-400 mt-1">-- €</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                <p class="text-xs text-slate-400 font-medium">Mínimo Histórico</p>
+                <p id="kpi-min" class="text-xl md:text-2xl font-bold text-emerald-400 mt-1">-- €</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                <p class="text-xs text-slate-400 font-medium">Máximo Histórico</p>
+                <p id="kpi-max" class="text-xl md:text-2xl font-bold text-rose-400 mt-1">-- €</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                <p class="text-xs text-slate-400 font-medium">Total Registros</p>
+                <p id="kpi-total" class="text-xl md:text-2xl font-bold text-slate-200 mt-1">--</p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+            <div class="flex space-x-2">
+                <button onclick="cambiarPestana('grafica')" id="btn-grafica" class="px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20">
+                    📊 Gráfica
+                </button>
+                <button onclick="cambiarPestana('tabla')" id="btn-tabla" class="px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800">
+                    📋 Tabla Histórica
+                </button>
+            </div>
+
+            <div id="contenedor-filtros" class="flex space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                <button onclick="filtrarTiempo('7d')" id="filt-7d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">7 Días</button>
+                <button onclick="filtrarTiempo('30d')" id="filt-30d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">30 Días</button>
+                <button onclick="filtrarTiempo('todo')" id="filt-todo" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-amber-400 shadow-sm">Todo</button>
+            </div>
         </div>
 
         <div id="seccion-grafica" class="space-y-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-                <h2 class="text-sm uppercase tracking-wider text-slate-400 font-semibold mb-1">Producto Monitoreado</h2>
-                <p class="text-xl md:text-2xl font-bold text-white mb-4">Panasonic LUMIX (Amazon.es)</p>
-                
-                <div class="flex flex-wrap gap-4 items-center justify-between pt-4 border-t border-slate-800/80">
-                    <div class="text-xs text-slate-400">
-                        🕒 Datos leídos directamente desde tu CSV en GitHub
-                    </div>
-                    <a href="https://www.amazon.es/dp/B01NCTOKPM" target="_blank" class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all shadow-md shadow-amber-500/20">
-                        Ver en Amazon &rarr;
-                    </a>
-                </div>
-            </div>
-
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-xl">
                 <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
-                    <h3 class="text-base font-semibold text-slate-200">Evolución de Precio Dinámica</h3>
+                    <h3 class="text-base font-semibold text-slate-200">Evolución de Precio Interactiva</h3>
+                    <a href="https://www.amazon.es/dp/B01NCTOKPM" target="_blank" class="text-xs font-semibold text-amber-400 hover:underline">Ver en Amazon &rarr;</a>
                 </div>
                 <div class="bg-slate-950/60 rounded-xl p-4 border border-slate-800/50 relative h-72 md:h-96">
                     <canvas id="graficaPrecios"></canvas>
@@ -64,8 +78,7 @@
 
         <div id="seccion-tabla" class="hidden space-y-6">
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-                <h3 class="text-base font-semibold text-slate-200 mb-4 border-b border-slate-800 pb-3">Registros del Archivo CSV</h3>
-                
+                <h3 class="text-base font-semibold text-slate-200 mb-4 border-b border-slate-800 pb-3">Registro Detallado del CSV</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-slate-300">
                         <thead class="bg-slate-950 text-slate-400 uppercase text-xs">
@@ -74,53 +87,80 @@
                                 <th class="py-3 px-4 rounded-r-lg">Precio Registrado</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-cuerpo" class="divide-y divide-slate-800">
-                            </tbody>
+                        <tbody id="tabla-cuerpo" class="divide-y divide-slate-800"></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-wrap items-center justify-between gap-4 text-xs text-slate-400">
+            <div>
+                <span class="font-semibold text-slate-300">Última comprobación:</span> <span id="info-ultima-fecha">--</span>
+            </div>
+            <div>
+                <span class="font-semibold text-slate-300">Frecuencia:</span> Cada 24 horas (Automático)
+            </div>
+            <div>
+                <span class="font-semibold text-slate-300">Plataforma:</span> GitHub Actions & Pages
             </div>
         </div>
 
     </main>
 
     <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-        <p>Panel impulsado por GitHub Pages, Chart.js y Python.</p>
+        <p>Panel de control inteligente para seguimiento de precios de Amazon.</p>
     </footer>
 
     <script>
+        let globalData = [];
+        let miGrafica = null;
+
         function cambiarPestana(tipo) {
             const btnGrafica = document.getElementById('btn-grafica');
             const btnTabla = document.getElementById('btn-tabla');
             const secGrafica = document.getElementById('seccion-grafica');
             const secTabla = document.getElementById('seccion-tabla');
+            const filtros = document.getElementById('contenedor-filtros');
 
             if (tipo === 'grafica') {
                 secGrafica.classList.remove('hidden');
                 secTabla.classList.add('hidden');
+                filtros.classList.remove('hidden');
                 btnGrafica.className = "px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20";
                 btnTabla.className = "px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800";
             } else {
                 secGrafica.classList.add('hidden');
                 secTabla.classList.remove('hidden');
+                filtros.classList.add('hidden');
                 btnTabla.className = "px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20";
                 btnGrafica.className = "px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800";
             }
         }
 
-        // Leer el CSV y construir la tabla y la gráfica interactiva
+        // Cargar CSV y procesar datos
         Papa.parse("historial_precios.csv", {
             download: true,
             header: true,
             complete: function(results) {
-                const datosValidos = results.data.filter(row => row.Fecha && row.Precio);
-                
-                const fechas = datosValidos.map(row => row.Fecha);
-                const precios = datosValidos.map(row => parseFloat(row.Precio));
+                globalData = results.data.filter(row => row.Fecha && row.Precio);
+                if (globalData.length === 0) return;
 
-                // 1. Rellenar la tabla
+                // Calcular KPIs
+                const precios = globalData.map(row => parseFloat(row.Precio));
+                const actual = precios[precios.length - 1];
+                const min = Math.min(...precios);
+                const max = Math.max(...precios);
+
+                document.getElementById('kpi-actual').innerText = actual.toFixed(2) + ' €';
+                document.getElementById('kpi-min').innerText = min.toFixed(2) + ' €';
+                document.getElementById('kpi-max').innerText = max.toFixed(2) + ' €';
+                document.getElementById('kpi-total').innerText = globalData.length;
+                document.getElementById('info-ultima-fecha').innerText = globalData[globalData.length - 1].Fecha;
+
+                // Rellenar tabla
                 const tbody = document.getElementById('tabla-cuerpo');
                 tbody.innerHTML = "";
-                [...datosValidos].reverse().forEach(row => {
+                [...globalData].reverse().forEach(row => {
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-800/50 transition-colors";
                     tr.innerHTML = `
@@ -130,57 +170,85 @@
                     tbody.appendChild(tr);
                 });
 
-                // 2. Crear la gráfica interactiva con Chart.js
-                const ctx = document.getElementById('graficaPrecios').getContext('2d');
-                
-                // Color dinámico: si el último precio es menor o igual que el anterior, verde; si sube, rojo
-                let colorLinea = '#10b981'; // Verde por defecto
-                if (precios.length >= 2) {
-                    if (precios[precios.length - 1] > precios[precios.length - 2]) {
-                        colorLinea = '#ef4444'; // Rojo si ha subido
-                    }
-                }
-
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: fechas,
-                        datasets: [{
-                            label: 'Precio (€)',
-                            data: precios,
-                            borderColor: colorLinea,
-                            backgroundColor: colorLinea + '20',
-                            borderWidth: 3,
-                            pointBackgroundColor: colorLinea,
-                            pointRadius: 0,
-                            pointHoverRadius: 6,
-                            fill: true,
-                            tension: 0.3
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            x: {
-                                ticks: { color: '#94a3b8', font: { size: 10 } },
-                                grid: { color: '#1e293b' }
-                            },
-                            y: {
-                                ticks: { 
-                                    color: '#94a3b8',
-                                    callback: function(value) { return value + ' €'; }
-                                },
-                                grid: { color: '#1e293b' }
-                            }
-                        }
-                    }
-                });
+                // Dibujar gráfica inicial (Todo)
+                renderizarGrafica(globalData);
             }
         });
+
+        function renderizarGrafica(datos) {
+            const ctx = document.getElementById('graficaPrecios').getContext('2d');
+            const fechas = datos.map(row => row.Fecha);
+            const precios = datos.map(row => parseFloat(row.Precio));
+
+            let colorLinea = '#10b981';
+            if (precios.length >= 2 && precios[precios.length - 1] > precios[precios.length - 2]) {
+                colorLinea = '#ef4444';
+            }
+
+            if (miGrafica) miGrafica.destroy();
+
+            miGrafica = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: fechas,
+                    datasets: [{
+                        label: 'Precio (€)',
+                        data: precios,
+                        borderColor: colorLinea,
+                        backgroundColor: colorLinea + '15',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            ticks: { color: '#94a3b8', font: { size: 10 } },
+                            grid: { color: '#1e293b' }
+                        },
+                        y: {
+                            ticks: { 
+                                color: '#94a3b8',
+                                callback: function(value) { return value + ' €'; }
+                            },
+                            grid: { color: '#1e293b' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function filtrarTiempo(filtro) {
+            ['7d', '30d', 'todo'].forEach(f => {
+                const btn = document.getElementById('filt-' + f);
+                if (f === filtro) {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-amber-400 shadow-sm";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all";
+                }
+            });
+
+            let datosFiltrados = globalData;
+            const ahora = new Date();
+
+            if (filtro === '7d') {
+                const limite = new Date();
+                limite.setDate(ahora.getDate() - 7);
+                datosFiltrados = globalData.filter(row => new Date(row.Fecha) >= limite);
+            } else if (filtro === '30d') {
+                const limite = new Date();
+                limite.setDate(ahora.getDate() - 30);
+                datosFiltrados = globalData.filter(row => new Date(row.Fecha) >= limite);
+            }
+
+            renderizarGrafica(datosFiltrados.length > 0 ? datosFiltrados : globalData);
+        }
     </script>
 </body>
 </html>
