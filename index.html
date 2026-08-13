@@ -56,15 +56,7 @@
         </div>
 
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
-            <div class="flex space-x-2">
-                <button onclick="cambiarPestana('grafica')" id="btn-grafica" class="px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20">
-                    📊 Gráfica
-                </button>
-                <button onclick="cambiarPestana('tabla')" id="btn-tabla" class="px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800">
-                    📋 Tabla Histórica
-                </button>
-            </div>
-
+            <h3 class="text-base font-semibold text-slate-200">Evolución de Precio Interactiva</h3>
             <div id="contenedor-filtros" class="flex space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
                 <button onclick="filtrarTiempo('7d')" id="filt-7d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">7 Días</button>
                 <button onclick="filtrarTiempo('30d')" id="filt-30d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">30 Días</button>
@@ -72,31 +64,14 @@
             </div>
         </div>
 
-        <div id="seccion-grafica" class="space-y-6">
+        <div class="space-y-6">
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-xl">
-                <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
-                    <h3 class="text-base font-semibold text-slate-200">Evolución de Precio Interactiva</h3>
-                    <a href="https://www.amazon.es/dp/B01NCTOKPM" target="_blank" class="text-xs font-semibold text-amber-400 hover:underline">Ver en Amazon &rarr;</a>
+                <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3 text-xs text-slate-400">
+                    <span>Gráfica optimizada sin puntos intermedios</span>
+                    <a href="https://www.amazon.es/dp/B01NCTOKPM" target="_blank" class="font-semibold text-amber-400 hover:underline">Ver en Amazon &rarr;</a>
                 </div>
-                <div class="bg-slate-950/60 rounded-xl p-4 border border-slate-800/50 relative h-72 md:h-96">
+                <div class="bg-slate-950/60 rounded-xl p-4 border border-slate-800/50 relative h-80 md:h-[420px]">
                     <canvas id="graficaPrecios"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div id="seccion-tabla" class="hidden space-y-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-                <h3 class="text-base font-semibold text-slate-200 mb-4 border-b border-slate-800 pb-3">Registro Detallado del CSV</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-slate-300">
-                        <thead class="bg-slate-950 text-slate-400 uppercase text-xs">
-                            <tr>
-                                <th class="py-3 px-4 rounded-l-lg">Fecha y Hora</th>
-                                <th class="py-3 px-4 rounded-r-lg">Precio Registrado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-cuerpo" class="divide-y divide-slate-800"></tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -123,28 +98,6 @@
         let globalData = [];
         let miGrafica = null;
 
-        function cambiarPestana(tipo) {
-            const btnGrafica = document.getElementById('btn-grafica');
-            const btnTabla = document.getElementById('btn-tabla');
-            const secGrafica = document.getElementById('seccion-grafica');
-            const secTabla = document.getElementById('seccion-tabla');
-            const filtros = document.getElementById('contenedor-filtros');
-
-            if (tipo === 'grafica') {
-                secGrafica.classList.remove('hidden');
-                secTabla.classList.add('hidden');
-                filtros.classList.remove('hidden');
-                btnGrafica.className = "px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20";
-                btnTabla.className = "px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800";
-            } else {
-                secGrafica.classList.add('hidden');
-                secTabla.classList.remove('hidden');
-                filtros.classList.add('hidden');
-                btnTabla.className = "px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20";
-                btnGrafica.className = "px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800";
-            }
-        }
-
         Papa.parse("historial_precios.csv", {
             download: true,
             header: true,
@@ -163,7 +116,6 @@
                 document.getElementById('kpi-total').innerText = globalData.length;
                 document.getElementById('info-ultima-fecha').innerText = globalData[globalData.length - 1].Fecha;
 
-                // Calcular tendencia respecto al registro anterior
                 const badgeTendencia = document.getElementById('kpi-tendencia');
                 if (precios.length >= 2) {
                     const anterior = precios[precios.length - 2];
@@ -183,18 +135,6 @@
                 } else {
                     badgeTendencia.innerHTML = `Primer registro`;
                 }
-
-                const tbody = document.getElementById('tabla-cuerpo');
-                tbody.innerHTML = "";
-                [...globalData].reverse().forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-800/50 transition-colors";
-                    tr.innerHTML = `
-                        <td class="py-3 px-4">${row.Fecha}</td>
-                        <td class="py-3 px-4 font-semibold text-amber-400">${row.Precio} €</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
 
                 renderizarGrafica(globalData);
             }
