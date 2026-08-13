@@ -7,7 +7,7 @@
   "theme_color": "#020617",
   "icons": [
     {
-      "src": "https://images.emojiterra.com/google/android-12l/512px/1f4f8.png",
+      "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
