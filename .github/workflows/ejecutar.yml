@@ -1,9 +1,9 @@
 name: Rastreador de Precios Automático
 
 on:
+  on:
   schedule:
-    # Se ejecuta cada 3 horas, los 365 días del año de forma automática
-    - cron: '0 */3 * * *'
+    - cron: '0 * * * *' # Esto significa a los 0 minutos de cada hora
   workflow_dispatch: # Esto te deja mantener el botón de ejecución manual por si quieres probarlo
 
 permissions:
