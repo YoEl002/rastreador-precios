@@ -109,7 +109,7 @@
                 <span class="font-semibold text-neutral-300">Próxima actualización:</span> <span id="info-proxima-fecha" class="text-white font-bold">--/--, --:--</span>
             </div>
             <div>
-                <span class="font-semibold text-neutral-300">Frecuencia:</span> Cada 3 horas
+                <span class="font-semibold text-neutral-300">Frecuencia:</span> Cada hora
             </div>
         </div>
 
@@ -145,7 +145,7 @@
 
                 const fechaUltima = new Date(ultimaFechaStr);
                 if (!isNaN(fechaUltima)) {
-                    fechaUltima.setHours(fechaUltima.getHours() + 3);
+                    fechaUltima.setHours(fechaUltima.getHours() + 1);
                     const dia = String(fechaUltima.getDate()).padStart(2, '0');
                     const mes = String(fechaUltima.getMonth() + 1).padStart(2, '0');
                     const hora = String(fechaUltima.getHours()).padStart(2, '0');
