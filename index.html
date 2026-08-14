@@ -22,7 +22,7 @@
             <div class="flex items-center space-x-3">
                 <img src="icon.png" alt="Logo" class="w-8 h-8 rounded object-contain bg-neutral-900 border border-neutral-800 p-0.5">
                 <div>
-                    <h1 id="header-titulo" class="text-base md:text-lg font-bold tracking-tight text-white">Panasonic LUMIX G VARIO</h1>
+                    <h1 class="text-base md:text-lg font-bold tracking-tight text-white">Panasonic LUMIX G VARIO 100-300mm</h1>
                     <p class="text-xs text-neutral-400 font-mono mt-0.5">Ref: H-FSA100300 II</p>
                 </div>
             </div>
@@ -33,11 +33,6 @@
     </header>
 
     <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full space-y-6">
-        
-        <div class="flex gap-2 border-b border-neutral-800 pb-4">
-            <button onclick="cambiarTab('grafica')" id="btn-tab-grafica" class="px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-800 text-white border border-neutral-700 transition-all">📈 Gráfica de Precios</button>
-            <button onclick="cambiarTab('info')" id="btn-tab-info" class="px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-900 text-neutral-400 border border-neutral-800 hover:text-white transition-all">ℹ️ Info del Producto</button>
-        </div>
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-black border border-neutral-800 rounded-2xl p-4 shadow-xl relative overflow-hidden flex flex-col justify-between">
@@ -83,18 +78,18 @@
             </div>
         </div>
 
-        <div id="seccion-grafica" class="space-y-6">
-            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-800 pb-4">
-                <h3 class="text-base font-semibold text-white">Evolución de Precio Interactiva</h3>
-                <div id="contenedor-filtros" class="flex flex-wrap gap-1 bg-black p-1 rounded-xl border border-neutral-800">
-                    <button onclick="filtrarTiempo('1d')" id="filt-1d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">1 día</button>
-                    <button onclick="filtrarTiempo('3d')" id="filt-3d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">3 días</button>
-                    <button onclick="filtrarTiempo('7d')" id="filt-7d" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-800 text-white shadow-sm border border-neutral-700">7 días</button>
-                    <button onclick="filtrarTiempo('30d')" id="filt-30d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">30 días</button>
-                    <button onclick="filtrarTiempo('todo')" id="filt-todo" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">Todo</button>
-                </div>
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+            <h3 class="text-base font-semibold text-white">Evolución de Precio Interactiva</h3>
+            <div id="contenedor-filtros" class="flex flex-wrap gap-1 bg-black p-1 rounded-xl border border-neutral-800">
+                <button onclick="filtrarTiempo('1d')" id="filt-1d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">1 día</button>
+                <button onclick="filtrarTiempo('3d')" id="filt-3d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">3 días</button>
+                <button onclick="filtrarTiempo('7d')" id="filt-7d" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-neutral-800 text-white shadow-sm border border-neutral-700">7 días</button>
+                <button onclick="filtrarTiempo('30d')" id="filt-30d" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">30 días</button>
+                <button onclick="filtrarTiempo('todo')" id="filt-todo" class="px-3 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-white transition-all">Todo</button>
             </div>
+        </div>
 
+        <div class="space-y-6">
             <div class="bg-black border border-neutral-800 rounded-2xl p-4 md:p-6 shadow-xl">
                 <div class="flex items-center justify-between mb-4 border-b border-neutral-800 pb-3 text-xs text-neutral-400">
                     <span>Historial de precios</span>
@@ -102,27 +97,6 @@
                 </div>
                 <div class="bg-black rounded-xl p-4 border border-neutral-800/50 relative h-80 md:h-[420px]">
                     <canvas id="graficaPrecios"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div id="seccion-info" class="hidden bg-black border border-neutral-800 rounded-2xl p-6 shadow-xl space-y-6">
-            <h3 class="text-base font-semibold text-white border-b border-neutral-800 pb-3">Información Oficial Extraída de Amazon</h3>
-            <div class="flex flex-col md:flex-row gap-6 items-center">
-                <div class="bg-neutral-900 border border-neutral-800 rounded-xl p-4 flex items-center justify-center min-w-[200px] h-[200px]">
-                    <img id="info-prod-img" src="" alt="Cargando imagen..." class="max-h-full max-w-full object-contain">
-                </div>
-                <div class="space-y-3 flex-grow">
-                    <div>
-                        <span class="text-xs text-neutral-400 font-medium">Título Oficial en Amazon:</span>
-                        <h2 id="info-prod-titulo" class="text-lg font-bold text-white mt-1">Cargando título del producto...</h2>
-                    </div>
-                    <div>
-                        <span class="text-xs text-neutral-400 font-medium">Enlace Directo:</span>
-                        <p class="mt-1">
-                            <a href="https://www.amazon.es/dp/B01NCTOKPM" target="_blank" class="text-xs text-amber-400 hover:underline">https://www.amazon.es/dp/B01NCTOKPM</a>
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -156,7 +130,6 @@
                 globalData = results.data.filter(row => row.Fecha && row.Precio);
                 if (globalData.length === 0) return;
 
-                const ultimoRegistro = globalData[globalData.length - 1];
                 const precios = globalData.map(row => parseFloat(row.Precio));
                 const actual = precios[precios.length - 1];
                 const min = Math.min(...precios);
@@ -167,17 +140,8 @@
                 document.getElementById('kpi-max').innerText = max.toFixed(2) + ' €';
                 document.getElementById('kpi-total').innerText = globalData.length;
                 
-                const ultimaFechaStr = ultimoRegistro.Fecha;
+                const ultimaFechaStr = globalData[globalData.length - 1].Fecha;
                 document.getElementById('info-ultima-fecha').innerText = ultimaFechaStr;
-
-                // Rellenar datos de la pestaña Info si existen en el CSV
-                if (ultimoRegistro.Titulo) {
-                    document.getElementById('header-titulo').innerText = ultimoRegistro.Titulo;
-                    document.getElementById('info-prod-titulo').innerText = ultimoRegistro.Titulo;
-                }
-                if (ultimoRegistro.Imagen) {
-                    document.getElementById('info-prod-img').src = ultimoRegistro.Imagen;
-                }
 
                 const fechaUltima = new Date(ultimaFechaStr);
                 if (!isNaN(fechaUltima)) {
@@ -213,25 +177,6 @@
                 filtrarTiempo('7d');
             }
         });
-
-        function cambiarTab(tab) {
-            const btnGrafica = document.getElementById('btn-tab-grafica');
-            const btnInfo = document.getElementById('btn-tab-info');
-            const secGrafica = document.getElementById('seccion-grafica');
-            const secInfo = document.getElementById('seccion-info');
-
-            if (tab === 'grafica') {
-                secGrafica.classList.remove('hidden');
-                secInfo.classList.add('hidden');
-                btnGrafica.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-800 text-white border border-neutral-700 transition-all";
-                btnInfo.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-900 text-neutral-400 border border-neutral-800 hover:text-white transition-all";
-            } else {
-                secInfo.classList.remove('hidden');
-                secGrafica.classList.add('hidden');
-                btnInfo.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-800 text-white border border-neutral-700 transition-all";
-                btnGrafica.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-900 text-neutral-400 border border-neutral-800 hover:text-white transition-all";
-            }
-        }
 
         function renderizarGrafica(datos) {
             const ctx = document.getElementById('graficaPrecios').getContext('2d');
