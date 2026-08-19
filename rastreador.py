@@ -178,11 +178,7 @@ if __name__ == "__main__":
 
         registrar_precio(precio)
         generar_grafico()
-        
-        zona_madrid = ZoneInfo("Europe/Madrid")
-        hora_espana_str = datetime.now(zona_madrid).strftime("%d/%m/%Y %H:%M")
-        mensaje = f"📷 **Lumix Tracker**\n\nFecha: {hora_espana_str}\nPrecio detectado: **{precio:.2f} €**"
-        enviar_notificacion_telegram(mensaje)
+        print("Ejecución finalizada correctamente en silencio.")
     else:
         zona_madrid = ZoneInfo("Europe/Madrid")
         hora_espana_str = datetime.now(zona_madrid).strftime("%d/%m/%Y %H:%M")
